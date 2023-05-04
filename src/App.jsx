@@ -1,5 +1,5 @@
-import React, { Fragment, useEffect, useState } from "react";
-import { paginate } from "./hooks/usePagination";
+import { Fragment } from "react";
+import { paginate } from "./hooks/paginate";
 
 const App = () => {
   const data = [];
@@ -8,12 +8,9 @@ const App = () => {
     data.push(i);
   }
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const pagination = paginate(data, currentPage);
-
-  const sliceData = data.slice(
-    pagination.itemsPerPage * currentPage - pagination.itemsPerPage,
-    pagination.itemsPerPage * currentPage
+  const { sliceData, currentPage, numbers, totalPages, goToPage } = paginate(
+    data,
+    10
   );
 
   return (
@@ -21,18 +18,18 @@ const App = () => {
       <div className="flex gap-2">
         <button
           disabled={currentPage === 1}
-          onClick={() => setCurrentPage((prevPage) => prevPage - 1)}
+          onClick={() => goToPage(currentPage - 1)}
         >
           {"<"}
         </button>
 
-        {pagination.values.map((item, index) => (
+        {numbers.map((item, index) => (
           <button
             disabled={item === "..."}
             className={`py-1 px-3 bg-red-200 rounded-full ${
               currentPage === item && "bg-red-600"
             }`}
-            onClick={() => setCurrentPage(item)}
+            onClick={() => goToPage(item)}
             key={index}
           >
             {item}
@@ -40,15 +37,15 @@ const App = () => {
         ))}
 
         <button
-          disabled={currentPage === pagination.totalPages}
-          onClick={() => setCurrentPage((prevPage) => prevPage + 1)}
+          disabled={currentPage === totalPages}
+          onClick={() => goToPage(currentPage + 1)}
         >
           {">"}
         </button>
       </div>
 
-      {sliceData.map((data) => (
-        <p>{data}</p>
+      {sliceData.map((data, ind) => (
+        <p key={ind}>{data}</p>
       ))}
     </Fragment>
   );
